@@ -124,7 +124,7 @@ function InstUpdates(){
  apt-get install libxml-parser-perl -y
  apt-get install shared-mime-info -y
  apt-get install jq -y
- apt-get install fail2ban -y
+ # apt-get install fail2ban -y
 
  # Installing a text colorizer
  gem install lolcat
@@ -1009,8 +1009,6 @@ FordServ
  systemctl daemon-reload
  systemctl start PR-Aiman
  systemctl enable PR-Aiman &> /dev/null
- systemctl enable fail2ban &> /dev/null
- systemctl start fail2ban &> /dev/null
 
  # Rebooting cron service
  systemctl restart cron
@@ -1253,7 +1251,6 @@ echo "--------------------------------------------------------------------------
 echo ""  | tee -a log-install.txt
 echo -e "\e[0;37m Server Information"  | tee -a log-install.txt
 echo -e "\e[0;37m    - Timezone    : Asia/Kuala_Lumpur (GMT +8)"  | tee -a log-install.txt
-echo -e "\e[0;37m    - Fail2Ban    : [ON]"  | tee -a log-install.txt
 echo -e "\e[0;37m    - IPtables    : [ON]"  | tee -a log-install.txt
 echo -e "\e[0;37m    - Auto-Reboot : [ON]"  | tee -a log-install.txt
 echo -e "\e[0;37m    - IPv6        : [OFF]"  | tee -a log-install.txt
