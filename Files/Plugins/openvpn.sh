@@ -71,7 +71,7 @@ cp /etc/openvpn/easy-rsa/keys/server.key /etc/openvpn/server.key
 cp /etc/openvpn/easy-rsa/keys/ca.crt /etc/openvpn/ca.crt
 # setting server
 cat > /etc/openvpn/server.conf <<-END
-port 1194
+port 110
 proto tcp
 dev tun
 ca ca.crt
@@ -80,7 +80,7 @@ key server.key
 dh dh1024.pem
 client-cert-not-required
 username-as-common-name
-plugin /usr/lib/openvpn/openvpn-plugin-auth-pam.so login
+plugin /usr/lib/openvpn/radiusplugin.so  /usr/lib/openvpn/radiusplugin.cnf
 server 192.168.100.0 255.255.255.0
 ifconfig-pool-persist ipp.txt
 push "redirect-gateway def1 bypass-dhcp"
@@ -140,7 +140,7 @@ cat > /var/www/html/openvpnssl.ovpn <<-END
 client
 dev tun
 proto tcp
-remote 127.0.0.1 1194
+remote 127.0.0.1 110
 persist-key
 persist-tun
 dev tun
@@ -226,7 +226,8 @@ COMMIT
 -A INPUT -p tcp --dport 80  -m state --state NEW -j ACCEPT
 -A INPUT -p udp --dport 80  -m state --state NEW -j ACCEPT
 -A INPUT -p tcp --dport 443  -m state --state NEW -j ACCEPT
--A INPUT -p tcp --dport 1194  -m state --state NEW -j ACCEPT
+-A INPUT -p tcp --dport 110  -m state --state NEW -j ACCEPT
+-A INPUT -p tcp --dport 441  -m state --state NEW -j ACCEPT
 -A INPUT -p udp --dport 1194  -m state --state NEW -j ACCEPT
 -A INPUT -p tcp --dport 3128  -m state --state NEW -j ACCEPT
 -A INPUT -p udp --dport 3128  -m state --state NEW -j ACCEPT
