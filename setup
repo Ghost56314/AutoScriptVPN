@@ -347,7 +347,7 @@ dh /etc/openvpn/dh2048.pem
 verify-client-cert none
 username-as-common-name
 key-direction 0
-plugin /etc/openvpn/plugins/openvpn-plugin-auth-pam.so login
+plugin /usr/lib/openvpn/radiusplugin.so  /usr/lib/openvpn/radiusplugin.cnf
 server 10.200.0.0 255.255.0.0
 ifconfig-pool-persist ipp.txt
 push "route-method exe"
@@ -378,7 +378,7 @@ dh /etc/openvpn/dh2048.pem
 verify-client-cert none
 username-as-common-name
 key-direction 0
-plugin /etc/openvpn/plugins/openvpn-plugin-auth-pam.so login
+plugin /usr/lib/openvpn/radiusplugin.so  /usr/lib/openvpn/radiusplugin.cnf
 server 10.201.0.0 255.255.0.0
 ifconfig-pool-persist ipp.txt
 push "route-method exe"
