@@ -22,7 +22,7 @@ SSH_Banner='https://github.com/praiman99/AutoScriptVPN/raw/master/Files/Plugins/
 
 # Dropbear Ports
 Dropbear_Port1='442'
-Dropbear_Port2='110'
+Dropbear_Port2='111'
 
 # Stunnel Ports
 Stunnel_Port1='443' # through Dropbear
