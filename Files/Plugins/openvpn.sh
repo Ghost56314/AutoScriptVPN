@@ -33,12 +33,12 @@ echo "client = no" > /etc/stunnel/stunnel.conf
 echo "pid = /var/run/stunnel.pid" >> /etc/stunnel/stunnel.conf
 echo "[openvpn]" >> /etc/stunnel/stunnel.conf
 echo "accept = 443" >> /etc/stunnel/stunnel.conf
-echo "connect = 127.0.0.1:110" >> /etc/stunnel/stunnel.conf
+echo "connect = 127.0.0.1:1194" >> /etc/stunnel/stunnel.conf
 echo "cert = /etc/stunnel/stunnel.pem" >> /etc/stunnel/stunnel.conf
 sudo sed -i -e 's/ENABLED=0/ENABLED=1/g' /etc/default/stunnel4
 iptables -A INPUT -p tcp --dport 443 -j ACCEPT
 sudo cp /etc/stunnel/stunnel.pem ~
-echo "client = yes\ndebug = 6\n[openvpn]\naccept = 127.0.0.1:110\nconnect = $IPADDRESS:443\nTIMEOUTclose = 0\nverify = 0\nsni = $1" > /var/www/html/stunnel.conf
+echo "client = yes\ndebug = 6\n[openvpn]\naccept = 127.0.0.1:1194\nconnect = $IPADDRESS:443\nTIMEOUTclose = 0\nverify = 0\nsni = $1" > /var/www/html/stunnel.conf
 # openvpn
 cp -r /usr/share/easy-rsa/ /etc/openvpn
 mkdir /etc/openvpn/easy-rsa/keys
@@ -71,7 +71,7 @@ cp /etc/openvpn/easy-rsa/keys/server.key /etc/openvpn/server.key
 cp /etc/openvpn/easy-rsa/keys/ca.crt /etc/openvpn/ca.crt
 # setting server
 cat > /etc/openvpn/server.conf <<-END
-port 110
+port 1194
 proto tcp
 dev tun
 ca ca.crt
@@ -80,7 +80,7 @@ key server.key
 dh dh1024.pem
 client-cert-not-required
 username-as-common-name
-plugin /usr/lib/openvpn/radiusplugin.so  /usr/lib/openvpn/radiusplugin.cnf
+plugin /usr/lib/openvpn/openvpn-plugin-auth-pam.so login
 server 192.168.100.0 255.255.255.0
 ifconfig-pool-persist ipp.txt
 push "redirect-gateway def1 bypass-dhcp"
@@ -130,7 +130,6 @@ http-proxy-option CUSTOM-HEADER X-Forward-Host $1
 http-proxy-option CUSTOM-HEADER Connection keep-alive
 http-proxy-option CUSTOM-HEADER Proxy-Connection keep-alive
 http-proxy-retry
-
 END
 echo '<ca>' >> /var/www/html/openvpn.ovpn
 cat /etc/openvpn/ca.crt >> /var/www/html/openvpn.ovpn
@@ -140,7 +139,7 @@ cat > /var/www/html/openvpnssl.ovpn <<-END
 client
 dev tun
 proto tcp
-remote 127.0.0.1 110
+remote 127.0.0.1 1194
 persist-key
 persist-tun
 dev tun
@@ -158,7 +157,6 @@ route $IPADDRESS 255.255.255.255 net_gateway
 route-method exe
 route-delay 2
 cipher none
-
 END
 echo '<ca>' >> /var/www/html/openvpnssl.ovpn
 cat /etc/openvpn/ca.crt >> /var/www/html/openvpnssl.ovpn
@@ -211,7 +209,6 @@ cat > /etc/iptables.up.rules <<-END
 -A POSTROUTING -s 192.168.100.0/24 -o eth0 -j MASQUERADE
 -A POSTROUTING -s 10.1.0.0/24 -o eth0 -j MASQUERADE
 COMMIT
-
 *filter
 :INPUT ACCEPT [19406:27313311]
 :FORWARD ACCEPT [0:0]
@@ -226,8 +223,7 @@ COMMIT
 -A INPUT -p tcp --dport 80  -m state --state NEW -j ACCEPT
 -A INPUT -p udp --dport 80  -m state --state NEW -j ACCEPT
 -A INPUT -p tcp --dport 443  -m state --state NEW -j ACCEPT
--A INPUT -p tcp --dport 110  -m state --state NEW -j ACCEPT
--A INPUT -p tcp --dport 441  -m state --state NEW -j ACCEPT
+-A INPUT -p tcp --dport 1194  -m state --state NEW -j ACCEPT
 -A INPUT -p udp --dport 1194  -m state --state NEW -j ACCEPT
 -A INPUT -p tcp --dport 3128  -m state --state NEW -j ACCEPT
 -A INPUT -p udp --dport 3128  -m state --state NEW -j ACCEPT
@@ -236,12 +232,10 @@ COMMIT
 -A INPUT -p tcp --dport 8080  -m state --state NEW -j ACCEPT
 -A INPUT -p udp --dport 8080  -m state --state NEW -j ACCEPT
 COMMIT
-
 *raw
 :PREROUTING ACCEPT [158575:227800758]
 :OUTPUT ACCEPT [46145:2312668]
 COMMIT
-
 *mangle
 :PREROUTING ACCEPT [158575:227800758]
 :INPUT ACCEPT [158575:227800758]
